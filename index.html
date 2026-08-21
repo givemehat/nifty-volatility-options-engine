@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlphaGrey — NIFTY Volatility & Options Liquidity Engine</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#e6fbfb',
+              100: '#b3f4f5',
+              400: '#00e5ff',
+              500: '#00b8d4',
+              600: '#0097a7',
+              900: '#00363a',
+            },
+            surface: {
+              800: '#161b22',
+              850: '#0f141c',
+              900: '#0a0d14',
+              950: '#05070a'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- KaTeX for math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0d14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #232d3d;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00e5ff;
+    }
+  </style>
+</head>
+<body class="bg-surface-900 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-black">
+
+  <!-- TOP HEADER -->
+  <header class="border-b border-slate-800 bg-surface-850/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-brand-500/20">
+          <i data-lucide="zap" class="w-6 h-6 text-black fill-current"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-lg tracking-tight text-white">AlphaGrey</span>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded bg-cyan-950 text-cyan-400 border border-cyan-800/60 font-mono">QUANT v1.0</span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">NIFTY Volatility Forecasting & Options Liquidity Engine</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center space-x-1 bg-surface-900 p-1 rounded-xl border border-slate-800">
+        <button id="tab-volatility" onclick="switchTab('volatility')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 bg-brand-500 text-black shadow">
+          <i data-lucide="trending-up" class="w-4 h-4"></i>
+          <span>Volatility Forecast</span>
+        </button>
+        <button id="tab-options" onclick="switchTab('options')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-surface-800">
+          <i data-lucide="crosshair" class="w-4 h-4"></i>
+          <span>Strangle Screener</span>
+        </button>
+        <button id="tab-docs" onclick="switchTab('docs')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 text-slate-300 hover:text-white hover:bg-surface-800">
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+          <span class="hidden md:inline">Math & Architecture</span>
+        </button>
+      </nav>
+
+      <!-- GitHub Link & Status -->
+      <div class="flex items-center space-x-3">
+        <div class="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/50 text-emerald-400 text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>DuckDB Engine Active</span>
+        </div>
+        <a href="https://github.com/givemehat/nifty-volatility-options-engine" target="_blank" class="p-2 rounded-lg bg-surface-800 hover:bg-slate-700 text-slate-300 hover:text-white transition border border-slate-700/50">
+          <i data-lucide="github" class="w-5 h-5"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- HERO METRICS STRIP -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-surface-850 p-4 rounded-2xl border border-slate-800 shadow-sm relative overflow-hidden group">
+        <div class="text-xs font-medium text-slate-400">Database Engine</div>
+        <div class="text-xl font-bold text-white mt-1">Embedded DuckDB</div>
+        <div class="text-xs text-brand-400 mt-1 font-mono">Zero external DB server</div>
+      </div>
+
+      <div class="bg-surface-850 p-4 rounded-2xl border border-slate-800 shadow-sm relative overflow-hidden group">
+        <div class="text-xs font-medium text-slate-400">Underlying Universe</div>
+        <div class="text-xl font-bold text-white mt-1">19 Assets (NSE)</div>
+        <div class="text-xs text-emerald-400 mt-1">NIFTY 50 + Equities</div>
+      </div>
+
+      <div class="bg-surface-850 p-4 rounded-2xl border border-slate-800 shadow-sm relative overflow-hidden group">
+        <div class="text-xs font-medium text-slate-400">Forecasting Suite</div>
+        <div class="text-xl font-bold text-white mt-1">6 Model Variants</div>
+        <div class="text-xs text-brand-400 mt-1">HAR / PCA / LightGBM / XGB</div>
+      </div>
+
+      <div class="bg-surface-850 p-4 rounded-2xl border border-slate-800 shadow-sm relative overflow-hidden group">
+        <div class="text-xs font-medium text-slate-400">Short-Strangle Screener</div>
+        <div class="text-xl font-bold text-white mt-1">Multi-Factor Ranked</div>
+        <div class="text-xs text-amber-400 mt-1">Liquidity & Delta Balanced</div>
+      </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- VIEW 1: VOLATILITY FORECASTING -->
+    <!-- ============================================================= -->
+    <section id="view-volatility" class="space-y-6">
+      <!-- Control Bar -->
+      <div class="bg-surface-850 p-4 rounded-2xl border border-slate-800 flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex flex-wrap items-center gap-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Select Asset / Index</label>
+            <select id="asset-select" onchange="updateVolatilityView()" class="bg-surface-900 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+              <option value="NIFTY 50">NIFTY 50 (^NSEI)</option>
+              <option value="BANK NIFTY">BANK NIFTY (^NSEBANK)</option>
+              <option value="RELIANCE">RELIANCE (Reliance Ind.)</option>
+              <option value="TCS">TCS (Tata Consultancy)</option>
+              <option value="HDFCBANK">HDFCBANK (HDFC Bank)</option>
+              <option value="ICICIBANK">ICICIBANK (ICICI Bank)</option>
+              <option value="INFY">INFY (Infosys)</option>
+              <option value="SBIN">SBIN (State Bank of India)</option>
+              <option value="TATAMOTORS">TATAMOTORS (Tata Motors)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Lookback (Days): <span id="lookback-val" class="text-brand-400 font-mono">45</span></label>
+            <input id="lookback-slider" type="range" min="15" max="90" value="45" oninput="document.getElementById('lookback-val').innerText = this.value; updateVolatilityView();" class="w-36 accent-brand-500">
+          </div>
+        </div>
+
+        <!-- Metric Badges -->
+        <div class="flex items-center space-x-3 text-xs font-mono">
+          <div class="px-3 py-1.5 rounded-lg bg-surface-900 border border-slate-800">
+            <span class="text-slate-400">Best Model:</span> <span id="badge-best-model" class="text-brand-400 font-bold">LightGBM</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-surface-900 border border-slate-800">
+            <span class="text-slate-400">Best QLIKE:</span> <span id="badge-best-qlike" class="text-emerald-400 font-bold">0.00842</span>
+          </div>
+          <div class="px-3 py-1.5 rounded-lg bg-surface-900 border border-slate-800">
+            <span class="text-slate-400">Out-of-Sample R²:</span> <span id="badge-best-r2" class="text-cyan-400 font-bold">0.6841</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Forecast Chart -->
+      <div class="bg-surface-850 p-5 rounded-2xl border border-slate-800 shadow">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-semibold text-lg text-white flex items-center space-x-2">
+              <span>🎯 Out-of-Sample Forecast vs Realized Volatility</span>
+            </h3>
+            <p class="text-xs text-slate-400">Comparing ground truth Realized Volatility (%) against Econometric HAR variants and Machine Learning models</p>
+          </div>
+          <div id="model-toggles" class="flex flex-wrap gap-1.5">
+            <!-- Toggles generated by JS -->
+          </div>
+        </div>
+        <div id="forecast-chart" class="w-full h-[450px]"></div>
+      </div>
+
+      <!-- Two-Column Grid: Leaderboard & Diebold-Mariano Matrix -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Leaderboard Table -->
+        <div class="bg-surface-850 p-5 rounded-2xl border border-slate-800 shadow flex flex-col">
+          <div class="mb-3">
+            <h3 class="font-semibold text-white flex items-center space-x-2">
+              <i data-lucide="trophy" class="w-5 h-5 text-yellow-400"></i>
+              <span>Model Performance Leaderboard</span>
+            </h3>
+            <p class="text-xs text-slate-400">Ranked by Patton (2011) robust Quasi-Likelihood (QLIKE) loss</p>
+          </div>
+          <div class="overflow-x-auto flex-1">
+            <table class="w-full text-left text-sm">
+              <thead class="text-xs uppercase bg-surface-900/60 text-slate-400 border-b border-slate-800 font-mono">
+                <tr>
+                  <th class="py-2.5 px-3">Rank</th>
+                  <th class="py-2.5 px-3">Model</th>
+                  <th class="py-2.5 px-3">QLIKE Loss</th>
+                  <th class="py-2.5 px-3">R² Score</th>
+                  <th class="py-2.5 px-3">RMSE</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-tbody" class="divide-y divide-slate-800 font-mono text-xs">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Diebold-Mariano Matrix -->
+        <div class="bg-surface-850 p-5 rounded-2xl border border-slate-800 shadow">
+          <div class="mb-3">
+            <h3 class="font-semibold text-white flex items-center space-x-2">
+              <i data-lucide="flame" class="w-5 h-5 text-brand-400"></i>
+              <span>Diebold-Mariano Significance Matrix</span>
+            </h3>
+            <p class="text-xs text-slate-400">Pairwise loss differential tests. Cells marked with ★ indicate p &lt; 0.05 statistical significance</p>
+          </div>
+          <div id="dm-heatmap" class="w-full h-[320px]"></div>
+        </div>
+
+      </div>
+
+      <!-- Realized Volatility & Jump Decomposition -->
+      <div class="bg-surface-850 p-5 rounded-2xl border border-slate-800 shadow">
+        <div class="mb-3">
+          <h3 class="font-semibold text-white flex items-center space-x-2">
+            <i data-lucide="bar-chart-2" class="w-5 h-5 text-emerald-400"></i>
+            <span>Realized Volatility &amp; Jump Variation Decomposition</span>
+          </h3>
+          <p class="text-xs text-slate-400">Separates total integrated variance into Continuous Diffusion (Bipower Variation \(BV_t\)) and Jump shocks (\(J_t = \max(0, RV_t - BV_t)\))</p>
+        </div>
+        <div id="jump-chart" class="w-full h-[320px]"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- VIEW 2: OPTIONS STRANGLE SCREENER -->
+    <!-- ============================================================= -->
+    <section id="view-options" class="space-y-6 hidden">
+      <!-- Options Filter Bar -->
+      <div class="bg-surface-850 p-4 rounded-2xl border border-slate-800 flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex flex-wrap items-center gap-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Index / Underwriting Name</label>
+            <select id="opt-symbol-select" onchange="updateOptionsView()" class="bg-surface-900 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+              <option value="NIFTY">NIFTY 50 (Spot ~24,650)</option>
+              <option value="BANKNIFTY">BANKNIFTY (Spot ~52,300)</option>
+              <option value="RELIANCE">RELIANCE (Spot ~2,950)</option>
+              <option value="TCS">TCS (Spot ~4,200)</option>
+              <option value="HDFCBANK">HDFCBANK (Spot ~1,650)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Target DTE (Days to Expiry)</label>
+            <select id="opt-dte-select" onchange="updateOptionsView()" class="bg-surface-900 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+              <option value="all">All Expiries (1 - 35 DTE)</option>
+              <option value="near">Near Weekly (&le; 7 DTE)</option>
+              <option value="mid">Next Weekly (8 - 18 DTE)</option>
+              <option value="monthly">Monthly (&ge; 19 DTE)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Min Liquidity Score: <span id="opt-liq-val" class="text-brand-400 font-mono">30</span></label>
+            <input id="opt-liq-slider" type="range" min="0" max="80" value="30" oninput="document.getElementById('opt-liq-val').innerText = this.value; updateOptionsView();" class="w-36 accent-brand-500">
+          </div>
+        </div>
+
+        <div class="text-xs font-mono text-slate-400">
+          Rank Score = <span class="text-cyan-400">40% Liquidity</span> + <span class="text-emerald-400">35% Safety</span> + <span class="text-amber-400">25% Yield</span>
+        </div>
+      </div>
+
+      <!-- Ranked Strangles Table -->
+      <div class="bg-surface-850 p-5 rounded-2xl border border-slate-800 shadow">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-semibold text-lg text-white flex items-center space-x-2">
+              <span>⚡ Ranked Short-Strangle Setups</span>
+            </h3>
+            <p class="text-xs text-slate-400">Click any row to dynamically load its live P&amp;L payoff curve and diagnostic profile</p>
+          </div>
+          <span class="text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2.5 py-1 rounded-lg" id="strangle-count-badge">25 Candidates</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="text-xs uppercase bg-surface-900/60 text-slate-400 border-b border-slate-800 font-mono">
+              <tr>
+                <th class="py-3 px-3">Expiry</th>
+                <th class="py-3 px-3">DTE</th>
+                <th class="py-3 px-3">Put Strike (PE)</th>
+                <th class="py-3 px-3">Call Strike (CE)</th>
+                <th class="py-3 px-3">Credit (₹)</th>
+                <th class="py-3 px-3">Yield %</th>
+                <th class="py-3 px-3">Net Delta</th>
+                <th class="py-3 px-3">Mean IV</th>
+                <th class="py-3 px-3">Liquidity</th>
+                <th class="py-3 px-3">Safety</th>
+                <th class="py-3 px-3 text-right">Rank Score</th>
+              </tr>
+            </thead>
+            <tbody id="strangles-tbody" class="divide-y divide-slate-800 font-mono text-xs cursor-pointer">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Interactive Payoff Diagram & Diagnostics -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-surface-850 p-5 rounded-2xl border border-slate-800 shadow">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <h3 class="font-semibold text-white">📊 Expiration P&amp;L Payoff Diagram</h3>
+              <p class="text-xs text-slate-400" id="payoff-title-desc">Selected Strangle: Put 24,000 / Call 25,000</p>
+            </div>
+            <div class="flex space-x-2 text-xs font-mono">
+              <span class="px-2 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800" id="badge-lower-be">Lower BE: ₹23,840</span>
+              <span class="px-2 py-1 rounded bg-rose-950 text-rose-400 border border-rose-800" id="badge-upper-be">Upper BE: ₹25,160</span>
+            </div>
+          </div>
+          <div id="payoff-chart" class="w-full h-[360px]"></div>
+        </div>
+
+        <div class="bg-surface-850 p-5 rounded-2xl border border-slate-800 shadow flex flex-col justify-between">
+          <div>
+            <h3 class="font-semibold text-white mb-3 flex items-center space-x-2">
+              <i data-lucide="activity" class="w-5 h-5 text-brand-400"></i>
+              <span>Position Diagnostics</span>
+            </h3>
+            
+            <div class="space-y-2.5 text-xs font-mono">
+              <div class="flex justify-between p-2 rounded bg-surface-900 border border-slate-800">
+                <span class="text-slate-400">Spot Price:</span>
+                <span class="text-white font-bold" id="diag-spot">₹24,650.00</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-surface-900 border border-slate-800">
+                <span class="text-slate-400">Total Credit Collected:</span>
+                <span class="text-emerald-400 font-bold" id="diag-credit">₹160.00</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-surface-900 border border-slate-800">
+                <span class="text-slate-400">Net Directional Delta:</span>
+                <span class="text-cyan-400 font-bold" id="diag-delta">+0.0120</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-surface-900 border border-slate-800">
+                <span class="text-slate-400">Strangle Width (Cushion):</span>
+                <span class="text-white font-bold" id="diag-cushion">4.05%</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-surface-900 border border-slate-800">
+                <span class="text-slate-400">Composite Safety Score:</span>
+                <span class="text-brand-400 font-bold" id="diag-safety">82.5 / 100</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-surface-900 border border-slate-800">
+                <span class="text-slate-400">Open Interest Depth:</span>
+                <span class="text-white font-bold" id="diag-oi">284,500 lots</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 p-3 rounded-xl bg-cyan-950/40 border border-cyan-800/40 text-xs text-cyan-200">
+            <span class="font-semibold text-cyan-400">⚡ Execution Tip:</span> High-probability delta-neutral strangle setup with wide breakeven cushion.
+          </div>
+        </div>
+      </div>
+
+      <!-- Intraday OI Divergence & Depth -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-surface-850 p-5 rounded-2xl border border-slate-800 shadow">
+          <div class="mb-3">
+            <h3 class="font-semibold text-white flex items-center space-x-2">
+              <i data-lucide="compass" class="w-5 h-5 text-amber-400"></i>
+              <span>Intraday OI Divergence vs Price Trajectory</span>
+            </h3>
+            <p class="text-xs text-slate-400">Flags asymmetric Open Interest writing against spot direction (resistance/support buildup)</p>
+          </div>
+          <div id="divergence-chart" class="w-full h-[320px]"></div>
+        </div>
+
+        <div class="bg-surface-850 p-5 rounded-2xl border border-slate-800 shadow">
+          <div class="mb-3">
+            <h3 class="font-semibold text-white flex items-center space-x-2">
+              <i data-lucide="layers" class="w-5 h-5 text-cyan-400"></i>
+              <span>Option Chain OI Depth Ladder</span>
+            </h3>
+            <p class="text-xs text-slate-400">Call Open Interest (Red) vs Put Open Interest (Green) across strikes</p>
+          </div>
+          <div id="depth-chart" class="w-full h-[320px]"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- VIEW 3: MATH & ARCHITECTURE DOCS -->
+    <!-- ============================================================= -->
+    <section id="view-docs" class="space-y-6 hidden">
+      <div class="bg-surface-850 p-6 rounded-2xl border border-slate-800 prose prose-invert max-w-none">
+        <h2 class="text-2xl font-bold text-white mb-2">🏛️ Mathematical Formulations &amp; System Architecture</h2>
+        <p class="text-slate-400 text-sm">AlphaGrey is engineered to run high-throughput quantitative volatility forecasting and options liquidity analytics on embedded DuckDB without requiring an external database cluster.</p>
+
+        <hr class="border-slate-800 my-6">
+
+        <h3 class="text-lg font-semibold text-brand-400">1. Realized Volatility &amp; Jump Decomposition</h3>
+        <p class="text-sm text-slate-300">From 5-minute intraday log returns \(r_{t,i} = \ln(P_{t,i}/P_{t,i-1})\):</p>
+        <div class="bg-surface-900 p-4 rounded-xl border border-slate-800 text-center my-3 font-mono text-sm overflow-x-auto">
+          $$RV_t = \sum_{i=1}^M r_{t,i}^2, \qquad BV_t = \frac{\pi}{2}\sum_{i=2}^M |r_{t,i}||r_{t,i-1}|, \qquad J_t = \max(0, RV_t - BV_t)$$
+        </div>
+
+        <h3 class="text-lg font-semibold text-brand-400 mt-6">2. HAR Cascade &amp; Spillover Extensions</h3>
+        <p class="text-sm text-slate-300">The Heterogeneous Autoregressive model incorporates multi-scale cascade memory and cross-asset correlation/sector spillover factors:</p>
+        <div class="bg-surface-900 p-4 rounded-xl border border-slate-800 text-center my-3 font-mono text-sm overflow-x-auto">
+          $$RV_{t+1, i} = \beta_0 + \beta_d RV_{t,i} + \beta_w RV_{t,i}^{(w)} + \beta_m RV_{t,i}^{(m)} + \gamma_c \overline{RV}_{t, \text{cluster}(i)} + \varepsilon_{t+1,i}$$
+        </div>
+
+        <h3 class="text-lg font-semibold text-brand-400 mt-6">3. Patton (2011) Robust QLIKE Loss &amp; Diebold-Mariano Tests</h3>
+        <p class="text-sm text-slate-300">Standard MSE is asymmetric and non-robust to heteroskedasticity in volatility modeling. We evaluate models using the Quasi-Likelihood robust loss:</p>
+        <div class="bg-surface-900 p-4 rounded-xl border border-slate-800 text-center my-3 font-mono text-sm overflow-x-auto">
+          $$\mathcal{L}_{QLIKE}(y_t, \hat{y}_t) = \frac{y_t}{\hat{y}_t} - \ln\left(\frac{y_t}{\hat{y}_t}\right) - 1, \qquad DM = \frac{\bar{d}}{\sqrt{\hat{V}(\bar{d})}} \sim \mathcal{N}(0, 1)$$
+        </div>
+
+        <h3 class="text-lg font-semibold text-brand-400 mt-6">4. Short-Strangle Multi-Factor Ranking Function</h3>
+        <p class="text-sm text-slate-300">Candidates are prioritized by balancing liquidity depth against portfolio risk and premium yield:</p>
+        <div class="bg-surface-900 p-4 rounded-xl border border-slate-800 text-center my-3 font-mono text-sm overflow-x-auto">
+          $$\text{Rank Score} = 0.40 \cdot \mathcal{S}_{\text{Liquidity}} + 0.35 \cdot \mathcal{S}_{\text{Risk Safety}} + 0.25 \cdot \mathcal{S}_{\text{Yield}}$$
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800 bg-surface-850 py-4 mt-auto text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap justify-between items-center gap-2">
+      <div>AlphaGrey Quantitative Options Engine &bull; Built with DuckDB, FastAPI &amp; Streamlit</div>
+      <div class="font-mono">Open Source Portfolio Project &bull; 2026</div>
+    </div>
+  </footer>
+
+  <!-- Application Logic JS -->
+  <script src="app.js"></script>
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Render KaTeX math
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '\\(', right: '\\)', display: false}
+        ]
+      });
+    });
+  </script>
+</body>
+</html>
