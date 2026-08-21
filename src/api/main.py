@@ -40,8 +40,20 @@ app.include_router(volatility.router)
 app.include_router(options.router)
 app.include_router(batch.router)
 
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# Static Frontend mounting
+FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent / "frontend"
+if FRONTEND_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+
 @app.get("/")
 def root():
+    index_file = FRONTEND_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(index_file)
     return {
         "app": "AlphaGrey Quantitative Engine",
         "version": "1.0.0",
