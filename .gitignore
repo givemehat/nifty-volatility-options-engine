@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# AlphaGrey Local Data & Cache
+data/raw/
+data/processed/
+data/database/
+*.duckdb
+*.parquet
+
+# Streamlit & IDEs
+.streamlit/
+.idea/
+.vscode/
+*.swp
+
+# Logs & Environment
+*.log
+.env

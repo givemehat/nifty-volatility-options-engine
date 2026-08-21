@@ -1,0 +1,60 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest httpx
+
+      - name: Run Quantitative Batch Pipeline
+        run: |
+          python -m src.jobs.run_batch --module all
+
+      - name: Run End-to-End API Route Tests
+        run: |
+          python -c "
+          from fastapi.testclient import TestClient
+          from src.api.main import app
+
+          client = TestClient(app)
+          endpoints = [
+              '/api/health',
+              '/api/volatility/symbols',
+              '/api/volatility/history?symbol=NIFTY%2050',
+              '/api/volatility/forecasts?symbol=NIFTY%2050',
+              '/api/volatility/leaderboard?symbol=NIFTY%2050',
+              '/api/volatility/dm-matrix?symbol=NIFTY%2050',
+              '/api/options/symbols',
+              '/api/options/strangles?symbol=NIFTY',
+              '/api/options/strangle-payoff?spot=24500&call_strike=24900&put_strike=24100&call_premium=80&put_premium=75',
+              '/api/options/divergence?symbol=NIFTY',
+              '/api/options/chain?symbol=NIFTY',
+          ]
+          for ep in endpoints:
+              r = client.get(ep)
+              assert r.status_code == 200, f'Endpoint {ep} failed with {r.status_code}'
+          print('All API endpoints verified successfully.')
+          "
+
+      - name: Verify Docker build
+        run: |
+          docker build -t alphagrey:latest .
