@@ -1,6 +1,24 @@
-# NIFTY Volatility & Options Liquidity Engine
+# ⚡ NIFTY Volatility & Options Liquidity Engine
 
-A quantitative research and options liquidity platform engineered for Indian index and equity markets (NIFTY 50, BANK NIFTY, and liquid NSE equities). Built with **embedded DuckDB / Parquet**, a decoupled **FastAPI** backend with **SlowAPI rate limiting**, and an interactive **Streamlit** dashboard.
+[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-00e5ff?style=for-the-badge&logo=github)](https://givemehat.github.io/nifty-volatility-options-engine/)
+[![CI Pipeline](https://img.shields.io/badge/CI_Pipeline-Passing-00E676?style=for-the-badge&logo=github-actions)](https://github.com/givemehat/nifty-volatility-options-engine/actions)
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python)](https://python.org)
+[![DuckDB](https://img.shields.io/badge/Storage-Embedded_DuckDB-FFF000?style=for-the-badge&logo=duckdb)](https://duckdb.org)
+
+An institutional-grade quantitative research and options liquidity platform engineered for Indian index and equity derivatives (NIFTY 50, BANK NIFTY, and liquid NSE equities). Powered by **embedded DuckDB / Parquet**, a decoupled **FastAPI** backend with **SlowAPI rate limiting**, and a live **GitHub Pages** web dashboard.
+
+---
+
+## 🌐 Live Web Application
+
+The interactive web dashboard is deployed and running live on **GitHub Pages**:
+
+👉 **[https://givemehat.github.io/nifty-volatility-options-engine/](https://givemehat.github.io/nifty-volatility-options-engine/)**
+
+### Key Features Live in Browser:
+- **📈 Realized Volatility Forecasting (Module 1)**: Interactive asset switcher (NIFTY 50, Bank Nifty, Reliance, TCS, etc.), lookback window slider, live Plotly line comparisons, model comparison toggles (HAR, Cluster-HAR, Sector-HAR, PCA-Backfill, LightGBM, XGBoost), Leaderboard with $R^2$/QLIKE/RMSE/MAE ranking, Diebold-Mariano test heatmap, and Jump decomposition.
+- **⚡ Options Liquidity & Short-Strangle Screener (Module 2)**: DTE filters, Min Liquidity slider, Ranked Short-Strangle setups, Interactive Black-Scholes P&L Payoff curve visualizer with breakevens and profit zones, and Intraday Open Interest Divergence tracker with institutional writing anomaly markers.
+- **🏛️ Math & Architecture Documentation**: Full LaTeX mathematical formulas and system specifications.
 
 ---
 
@@ -41,7 +59,7 @@ A quantitative research and options liquidity platform engineered for Indian ind
                                               │
                                               ▼
                                ┌─────────────────────────────┐
-                               │     STREAMLIT FRONTEND      │
+                               │  WEB SPA (GITHUB PAGES/UI)  │
                                │  - Forecast vs Realized UI  │
                                │  - DM Test Heatmap          │
                                │  - Short-Strangle Screener  │
@@ -51,50 +69,50 @@ A quantitative research and options liquidity platform engineered for Indian ind
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Deployment Options
 
-### 1. Setup Environment
-```bash
-# Clone repository
-git clone https://github.com/givemehat/nifty-volatility-options-engine.git
-cd nifty-volatility-options-engine
+### Option A: GitHub Pages (Instant Web App)
+The web application in `docs/` is automatically deployed to GitHub Pages via `.github/workflows/deploy-pages.yml` on every push to `main`.
 
-# Create virtual environment & install requirements
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-### 2. Run Batch Ingestion & Model Pipeline
-```bash
-# Ingests intraday data, fits HAR & ML models, scores options, and populates DuckDB
-python -m src.jobs.run_batch --module all
-```
-
-### 3. Launch Services
-You can run the backend and frontend separately or simultaneously:
-
-```bash
-# Terminal 1: Run FastAPI Backend
-uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
-
-# Terminal 2: Run Streamlit Frontend
-streamlit run app/main.py --server.port 8501
-```
-
-Access the web interfaces:
-- **Streamlit Web App**: [http://localhost:8501](http://localhost:8501)
-- **FastAPI Interactive Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **API Health Endpoint**: [http://localhost:8000/api/health](http://localhost:8000/api/health)
+Live URL: **`https://givemehat.github.io/nifty-volatility-options-engine/`**
 
 ---
 
-## 🐳 Docker Deployment
+### Option B: Streamlit Community Cloud (1-Click Deploy)
+1. Go to [share.streamlit.io](https://share.streamlit.io/).
+2. Select repository: `givemehat/nifty-volatility-options-engine`.
+3. Main file path: `streamlit_app.py`.
+4. Click **Deploy**.
 
-Run the complete 3-tier stack (API, UI, and APScheduler background worker) using `docker-compose`:
+---
+
+### Option C: Docker Container Deployment
+Run the complete 3-tier container stack (API, UI, and APScheduler background worker) using `docker-compose`:
 
 ```bash
+# Clone and launch all services
+git clone https://github.com/givemehat/nifty-volatility-options-engine.git
+cd nifty-volatility-options-engine
 docker-compose up --build -d
+```
+
+---
+
+### Option D: Local Environment Execution
+```bash
+# Setup environment
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Run quantitative batch pipeline (ingestion, model fitting, Greeks scoring)
+python -m src.jobs.run_batch --module all
+
+# Launch FastAPI backend
+uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+
+# Launch Streamlit dashboard
+streamlit run app/main.py --server.port 8501
 ```
 
 ---
