@@ -1,5 +1,5 @@
 """
-AlphaGrey - NIFTY Volatility & Options Liquidity Platform
+VolVantage - NIFTY Volatility & Options Liquidity Platform
 Streamlit Main Landing Page
 """
 
@@ -8,13 +8,13 @@ import pandas as pd
 from app.api_client import api_client
 
 st.set_page_config(
-    page_title="AlphaGrey Quantitative Platform",
+    page_title="VolVantage Quantitative Platform",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-st.title("⚡ AlphaGrey Quantitative Analytics")
+st.title("⚡ VolVantage Quantitative Analytics")
 st.markdown("### Public NIFTY Volatility Forecasting & Options Liquidity Screener")
 
 # Top Metrics Row

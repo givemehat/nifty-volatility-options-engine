@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AlphaGrey — NIFTY Volatility & Options Liquidity Engine</title>
+  <title>VolVantage — NIFTY Volatility & Options Liquidity Engine</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -78,7 +78,7 @@
         </div>
         <div>
           <div class="flex items-center space-x-2">
-            <span class="font-bold text-lg tracking-tight text-white">AlphaGrey</span>
+            <span class="font-bold text-lg tracking-tight text-white">VolVantage</span>
             <span class="px-2 py-0.5 text-xs font-semibold rounded bg-cyan-950 text-cyan-400 border border-cyan-800/60 font-mono">QUANT v1.0</span>
           </div>
           <p class="text-xs text-slate-400 hidden sm:block">NIFTY Volatility Forecasting & Options Liquidity Engine</p>
@@ -154,15 +154,15 @@
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Select Asset / Index</label>
             <select id="asset-select" onchange="updateVolatilityView()" class="bg-surface-900 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:outline-none">
-              <option value="NIFTY 50">NIFTY 50 (^NSEI)</option>
-              <option value="BANK NIFTY">BANK NIFTY (^NSEBANK)</option>
-              <option value="RELIANCE">RELIANCE (Reliance Ind.)</option>
-              <option value="TCS">TCS (Tata Consultancy)</option>
-              <option value="HDFCBANK">HDFCBANK (HDFC Bank)</option>
-              <option value="ICICIBANK">ICICIBANK (ICICI Bank)</option>
-              <option value="INFY">INFY (Infosys)</option>
-              <option value="SBIN">SBIN (State Bank of India)</option>
-              <option value="TATAMOTORS">TATAMOTORS (Tata Motors)</option>
+              <option value="NIFTY 50">NIFTY 50 (Index)</option>
+              <option value="BANK NIFTY">BANK NIFTY (Index)</option>
+              <option value="RELIANCE">RELIANCE (Energy/Conglomerate)</option>
+              <option value="TCS">TCS (IT Services)</option>
+              <option value="HDFCBANK">HDFCBANK (Private Banking)</option>
+              <option value="ICICIBANK">ICICIBANK (Private Banking)</option>
+              <option value="INFY">INFY (IT Services)</option>
+              <option value="SBIN">SBIN (PSU Banking)</option>
+              <option value="TATAMOTORS">TATAMOTORS (Auto OEM)</option>
             </select>
           </div>
 
@@ -175,13 +175,13 @@
         <!-- Metric Badges -->
         <div class="flex items-center space-x-3 text-xs font-mono">
           <div class="px-3 py-1.5 rounded-lg bg-surface-900 border border-slate-800">
-            <span class="text-slate-400">Best Model:</span> <span id="badge-best-model" class="text-brand-400 font-bold">LightGBM</span>
+            <span class="text-slate-400">Top Model:</span> <span id="badge-best-model" class="text-brand-400 font-bold">LightGBM</span>
           </div>
           <div class="px-3 py-1.5 rounded-lg bg-surface-900 border border-slate-800">
-            <span class="text-slate-400">Best QLIKE:</span> <span id="badge-best-qlike" class="text-emerald-400 font-bold">0.00842</span>
+            <span class="text-slate-400">Best QLIKE:</span> <span id="badge-best-qlike" class="text-emerald-400 font-bold">0.00841</span>
           </div>
           <div class="px-3 py-1.5 rounded-lg bg-surface-900 border border-slate-800">
-            <span class="text-slate-400">Out-of-Sample R²:</span> <span id="badge-best-r2" class="text-cyan-400 font-bold">0.6841</span>
+            <span class="text-slate-400">Out-of-Sample R²:</span> <span id="badge-best-r2" class="text-cyan-400 font-bold">0.6842</span>
           </div>
         </div>
       </div>
@@ -269,11 +269,14 @@
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Index / Underwriting Name</label>
             <select id="opt-symbol-select" onchange="updateOptionsView()" class="bg-surface-900 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:outline-none">
-              <option value="NIFTY">NIFTY 50 (Spot ~24,650)</option>
-              <option value="BANKNIFTY">BANKNIFTY (Spot ~52,300)</option>
-              <option value="RELIANCE">RELIANCE (Spot ~2,950)</option>
-              <option value="TCS">TCS (Spot ~4,200)</option>
-              <option value="HDFCBANK">HDFCBANK (Spot ~1,650)</option>
+              <option value="NIFTY 50">NIFTY 50 (Spot ~24,680)</option>
+              <option value="BANK NIFTY">BANK NIFTY (Spot ~52,450)</option>
+              <option value="RELIANCE">RELIANCE (Spot ~2,945)</option>
+              <option value="TCS">TCS (Spot ~4,180)</option>
+              <option value="HDFCBANK">HDFCBANK (Spot ~1,642)</option>
+              <option value="ICICIBANK">ICICIBANK (Spot ~1,185)</option>
+              <option value="INFY">INFY (Spot ~1,782)</option>
+              <option value="TATAMOTORS">TATAMOTORS (Spot ~1,045)</option>
             </select>
           </div>
 
@@ -360,7 +363,7 @@
             <div class="space-y-2.5 text-xs font-mono">
               <div class="flex justify-between p-2 rounded bg-surface-900 border border-slate-800">
                 <span class="text-slate-400">Spot Price:</span>
-                <span class="text-white font-bold" id="diag-spot">₹24,650.00</span>
+                <span class="text-white font-bold" id="diag-spot">₹24,680.00</span>
               </div>
               <div class="flex justify-between p-2 rounded bg-surface-900 border border-slate-800">
                 <span class="text-slate-400">Total Credit Collected:</span>
@@ -379,7 +382,7 @@
                 <span class="text-brand-400 font-bold" id="diag-safety">82.5 / 100</span>
               </div>
               <div class="flex justify-between p-2 rounded bg-surface-900 border border-slate-800">
-                <span class="text-slate-400">Open Interest Depth:</span>
+                <span class="text-white">Open Interest Depth:</span>
                 <span class="text-white font-bold" id="diag-oi">284,500 lots</span>
               </div>
             </div>
@@ -423,7 +426,7 @@
     <section id="view-docs" class="space-y-6 hidden">
       <div class="bg-surface-850 p-6 rounded-2xl border border-slate-800 prose prose-invert max-w-none">
         <h2 class="text-2xl font-bold text-white mb-2">🏛️ Mathematical Formulations &amp; System Architecture</h2>
-        <p class="text-slate-400 text-sm">AlphaGrey is engineered to run high-throughput quantitative volatility forecasting and options liquidity analytics on embedded DuckDB without requiring an external database cluster.</p>
+        <p class="text-slate-400 text-sm">VolVantage is engineered to run high-throughput quantitative volatility forecasting and options liquidity analytics on embedded DuckDB without requiring an external database cluster.</p>
 
         <hr class="border-slate-800 my-6">
 
@@ -458,8 +461,8 @@
   <!-- FOOTER -->
   <footer class="border-t border-slate-800 bg-surface-850 py-4 mt-auto text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap justify-between items-center gap-2">
-      <div>AlphaGrey Quantitative Options Engine &bull; Built with DuckDB, FastAPI &amp; Streamlit</div>
-      <div class="font-mono">Open Source Portfolio Project &bull; 2026</div>
+      <div>VolVantage Quantitative Options Engine &bull; Built with DuckDB, FastAPI &amp; Streamlit</div>
+      <div class="font-mono">Open Source Quantitative Platform &bull; 2026</div>
     </div>
   </footer>
 

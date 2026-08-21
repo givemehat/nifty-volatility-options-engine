@@ -1,11 +1,11 @@
-# ⚡ NIFTY Volatility & Options Liquidity Engine
+# ⚡ VolVantage — NIFTY Volatility & Options Liquidity Engine
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-00e5ff?style=for-the-badge&logo=github)](https://givemehat.github.io/nifty-volatility-options-engine/)
 [![CI Pipeline](https://img.shields.io/badge/CI_Pipeline-Passing-00E676?style=for-the-badge&logo=github-actions)](https://github.com/givemehat/nifty-volatility-options-engine/actions)
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python)](https://python.org)
 [![DuckDB](https://img.shields.io/badge/Storage-Embedded_DuckDB-FFF000?style=for-the-badge&logo=duckdb)](https://duckdb.org)
 
-An institutional-grade quantitative research and options liquidity platform engineered for Indian index and equity derivatives (NIFTY 50, BANK NIFTY, and liquid NSE equities). Powered by **embedded DuckDB / Parquet**, a decoupled **FastAPI** backend with **SlowAPI rate limiting**, and a live **GitHub Pages** web dashboard.
+**VolVantage** is an institutional-grade quantitative research and options liquidity platform engineered for Indian index and equity derivatives (NIFTY 50, BANK NIFTY, and liquid NSE equities). Powered by **embedded DuckDB / Parquet**, a decoupled **FastAPI** backend with **SlowAPI rate limiting**, and a live **GitHub Pages** web dashboard.
 
 ---
 
