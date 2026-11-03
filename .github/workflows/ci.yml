@@ -29,6 +29,10 @@ jobs:
         run: |
           python -m src.jobs.run_batch --module all
 
+      - name: Run PyTest Test Suite
+        run: |
+          pytest tests/test_pipeline.py -v
+
       - name: Run End-to-End API Route Tests
         run: |
           python -c "

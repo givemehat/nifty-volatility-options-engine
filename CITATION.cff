@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you utilize this quantitative framework or volatility forecasting pipeline in academic research, please cite it as below."
+title: "NIFTY Volatility & Options Engine: High-Frequency Realized Volatility Forecasting and Derivatives Liquidity Screener"
+authors:
+  - family-names: "Singh"
+    given-names: "Rajnish"
+    orcid: ""
+    affiliation: "Technology Innovation Hub (TIH), IIT Guwahati"
+date-released: 2026-10-01
+url: "https://github.com/givemehat/nifty-volatility-options-engine"
+repository-code: "https://github.com/givemehat/nifty-volatility-options-engine"
+keywords:
+  - "quantitative finance"
+  - "volatility forecasting"
+  - "realized volatility"
+  - "heterogeneous autoregressive model"
+  - "diebold-mariano test"
+  - "black-scholes"
+  - "duckdb"
+  - "options trading"
+license: "MIT"
