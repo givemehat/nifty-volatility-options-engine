@@ -30,6 +30,8 @@ jobs:
           python -m src.jobs.run_batch --module all
 
       - name: Run PyTest Test Suite
+        env:
+          PYTHONPATH: .
         run: |
           pytest tests/test_pipeline.py -v
 
